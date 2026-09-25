@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/am.js": { "maxDuration": 30, "memory": 1024 }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }
+      ]
+    }
+  ]
+}

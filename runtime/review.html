@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0d0d11">
+<title>AM Render Nimzz - Review Preset</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root { --accent:#00c2e8; --accent2:#7c5cfc; --bg:#0d0d11; --surface:#16161c; --surface2:#202028; --border:#282832; --text:#e0e0e0; --text2:#888899; --ok:#8fd8a0; --warn:#e8b96a; --bad:#ff8a8a; }
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    html, body { height:100%; }
+    body { font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; overflow:hidden; }
+    header { background:rgba(22,22,28,.92); padding:10px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px; flex:0 0 auto; }
+    h1 { font-size:.95rem; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .subtitle { font-size:.65rem; color:var(--text2); margin-top:2px; max-width:60vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    a.navlink { color:var(--accent); font-size:.72rem; text-decoration:none; border:1px solid #2a4a55; border-radius:5px; padding:6px 9px; white-space:nowrap; }
+
+    #layout { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+    #stage { flex:1 1 auto; min-height:0; background:#050508; display:flex; align-items:center; justify-content:center; padding:8px; position:relative; overflow:hidden; }
+    #view { display:block; background:#000; border-radius:6px; box-shadow:0 4px 24px rgba(0,0,0,.7); }
+    #overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:24px; color:var(--text2); font-size:.8rem; pointer-events:none; }
+    #overlay.hide { display:none; }
+    #overlay b { color:var(--text); font-size:.9rem; }
+    #overlay.err { color:var(--bad); }
+
+    #panel { flex:0 0 auto; background:rgba(22,22,28,.94); border-top:1px solid var(--border); padding:12px; padding-bottom:calc(12px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:10px; overflow-y:auto; max-height:52vh; }
+    @media (min-width:900px) { #layout { flex-direction:row; } #panel { width:380px; max-height:none; border-top:none; border-left:1px solid var(--border); } }
+
+    .card { background:var(--surface2); border:1px solid rgba(60,60,80,.35); border-radius:10px; padding:11px; display:flex; flex-direction:column; gap:9px; }
+    .card-title { font-size:.68rem; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; }
+    .row { display:flex; gap:8px; align-items:center; }
+    .row > * { flex:1; }
+    button { background:#2a2a36; color:#e8e8f0; border:1px solid #3a3a48; border-radius:8px; padding:10px 12px; font:inherit; font-size:.8rem; font-weight:600; cursor:pointer; }
+    button:hover { background:#33334a; } button:active { transform:scale(.98); }
+    button:disabled { opacity:.45; cursor:not-allowed; }
+    button.primary { background:var(--accent); border-color:var(--accent); color:#00202a; }
+    button.primary:hover { background:#00d9f5; }
+    .url-row { display:flex; gap:6px; }
+    .url-row input[type=text] { flex:1; min-width:0; background:#0e0e18; border:1px solid var(--border); color:var(--text); border-radius:8px; padding:10px; font:inherit; font-size:.8rem; outline:none; }
+    .url-row input[type=text]:focus { border-color:var(--accent); }
+    .url-row button { flex:0 0 auto; }
+    .upwrap { position:relative; }
+    .upwrap input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+    .upbtn { display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg,rgba(0,194,232,.07),rgba(124,92,252,.07)); border:1px dashed rgba(0,194,232,.35); border-radius:8px; padding:10px; font-size:.78rem; color:var(--accent); }
+    .mono { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.68rem; color:#9fa8b8; line-height:1.45; white-space:pre-wrap; word-break:break-word; }
+    .hint { font-size:.68rem; color:var(--text2); line-height:1.4; }
+    #state.ok { color:var(--ok); } #state.err { color:var(--bad); } #state.warn { color:var(--warn); }
+    input[type=range] { width:100%; accent-color:var(--accent); }
+    select { background:#121217; color:#ddd; border:1px solid #33333f; border-radius:6px; padding:7px; font:inherit; font-size:.76rem; width:100%; }
+    progress { width:100%; height:10px; accent-color:var(--accent); }
+    #expResult video { width:100%; margin-top:6px; border-radius:8px; background:#000; touch-action:pan-y; }
+    #expResult a { display:inline-block; margin-top:8px; color:#00202a; background:var(--accent); padding:10px 14px; border-radius:8px; font-weight:600; font-size:.82rem; text-decoration:none; }
+    #log { background:#0b0b0f; border:1px solid #26262f; border-radius:6px; padding:8px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.64rem; line-height:1.45; color:#9ad0e0; height:110px; overflow-y:auto; white-space:pre-wrap; word-break:break-word; }
+    details > summary { cursor:pointer; font-size:.72rem; color:var(--text2); padding:2px 0; }
+    .sect { font-size:.68rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:.6px; padding-bottom:4px; border-bottom:1px solid rgba(0,194,232,.2); }
+    ::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:2px; }
+</style>
+</head>
+<body>
+<header>
+    <div>
+        <h1>AM Render Nimzz</h1>
+        <div class="subtitle" id="subtitle">Tempel link Alight Motion atau upload XML</div>
+    </div>
+    <a class="navlink" href="preview.html">Preview efek &rarr;</a>
+</header>
+
+<div id="layout">
+    <div id="stage">
+        <canvas id="view" width="540" height="960"></canvas>
+        <div id="overlay"><b>Belum ada preset</b><span>Tempel link Alight Motion di bawah, lalu tekan Muat.</span></div>
+    </div>
+
+    <div id="panel">
+        <div class="sect">Sumber preset</div>
+        <div class="card">
+            <div class="url-row">
+                <input type="text" id="linkIn" placeholder="https://alightcreative.com/am/share/..." inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false">
+                <button class="primary" id="linkGo">Muat</button>
+            </div>
+            <div class="upwrap">
+                <div class="upbtn">📂 Atau upload file .xml</div>
+                <input type="file" id="xmlIn" accept=".xml,text/xml,application/xml" multiple>
+            </div>
+            <div class="hint">XML boleh 2 file sekaligus (preset + grup/cc). Foto &amp; audio otomatis dari paket, tidak perlu diganti.</div>
+            <div class="mono" id="state">pilih sumber untuk mulai</div>
+            <div class="row" id="pickRow" style="display:none"><select id="pick"></select></div>
+        </div>
+
+        <div class="sect">Putar</div>
+        <div class="card">
+            <div class="row">
+                <button class="primary" id="play" disabled>&#9654; Putar</button>
+                <button id="restart" disabled>&#8634; Ulang</button>
+                <button id="loopBtn">Loop: ON</button>
+            </div>
+            <input type="range" id="seek" min="0" max="1000" value="0" disabled>
+            <div class="mono" id="timeLabel">0.00s / 0.00s</div>
+            <div class="mono" id="status">-</div>
+        </div>
+
+        <div class="sect">Ekspor video</div>
+        <div class="card">
+            <div class="hint" id="expInfo">Resolusi &amp; FPS mengikuti bawaan preset (tidak bisa diubah).</div>
+            <div class="row"><button class="primary" id="expStart" disabled>&#11015; Ekspor</button><button id="expCancel" disabled>Batal</button></div>
+            <progress id="expBar" value="0" max="1"></progress>
+            <div class="mono" id="expStats">-</div>
+            <div id="expResult"></div>
+        </div>
+
+        <details>
+            <summary>Pengaturan &amp; log</summary>
+            <div class="card" style="margin-top:8px">
+                <label class="hint">Kualitas preview
+                    <select id="quality">
+                        <option value="360">360p (paling ringan)</option>
+                        <option value="480">480p</option>
+                        <option value="640" selected>640p</option>
+                        <option value="960">960p</option>
+                    </select>
+                </label>
+                <label class="hint">Geser audio vs gambar: <span id="offsetLabel">0 ms</span>
+                    <input type="range" id="offset" min="-1000" max="1000" step="10" value="0">
+                </label>
+                <div id="layers" class="mono"></div>
+                <div id="log"></div>
+            </div>
+        </details>
+    </div>
+</div>
+
+<script type="module">
+import { parseSceneXML } from './scene-parser.js';
+import { parseEffectXML } from './xml-parser.js';
+import { SceneRenderer } from './scene-renderer.js';
+import { exportFrames, exportSupport } from './video-export.js';
+
+const $ = (id) => document.getElementById(id);
+const canvas = $('view'), stageEl = $('stage'), overlayEl = $('overlay');
+const stateEl = $('state'), subtitleEl = $('subtitle'), statusEl = $('status'), timeLabel = $('timeLabel');
+const seekEl = $('seek'), playBtn = $('play'), restartBtn = $('restart'), loopBtn = $('loopBtn');
+const linkIn = $('linkIn'), linkGo = $('linkGo'), xmlIn = $('xmlIn'), pickRow = $('pickRow'), pickEl = $('pick');
+const expStart = $('expStart'), expCancel = $('expCancel'), expBar = $('expBar'), expStats = $('expStats'), expResult = $('expResult'), expInfo = $('expInfo');
+const qualityEl = $('quality'), offsetEl = $('offset'), offsetLabel = $('offsetLabel'), layersEl = $('layers'), logEl = $('log');
+
+const logLines = [];
+function log(m) { logLines.push(m); if (logLines.length > 300) logLines.shift(); logEl.textContent = logLines.join('\n'); logEl.scrollTop = logEl.scrollHeight; }
+function setState(text, kind) { stateEl.textContent = text; stateEl.className = 'mono' + (kind ? ' ' + kind : ''); }
+function showOverlay(html, err) { overlayEl.innerHTML = html; overlayEl.className = err ? 'err' : ''; }
+function hideOverlay() { overlayEl.className = 'hide'; }
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ---------------------------------------------------------------- state
+let renderer = null, scene = null;
+let audio = null, audioUrl = null, audioBroken = false;
+let playing = false, loop = true, currentMs = 0, lastTs = 0, needsRender = true, scrubbing = false;
+let exporting = false, exportCancelled = false, exportUrl = null, syncOffsetMs = 0;
+let pkg = null;              // { xmlByName, projects, imageUrls:Map(name->url), audio:[{name,url}] }
+let importScenes = [];       // XML utuh (punya <scene>)
+let importFragments = [];    // XML grup/cc tanpa <scene>
+const imageCache = new Map();
+const mediaAssign = new Map();
+const blobUrls = [];
+let effectIndexPromise = null;
+
+function b64ToBlobUrl(b64, mime) {
+    const bin = atob(b64); const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([u8], { type: mime }));
+    blobUrls.push(url);
+    return url;
+}
+function freeBlobs() { for (const u of blobUrls.splice(0)) URL.revokeObjectURL(u); imageCache.clear(); mediaAssign.clear(); }
+
+// ---------------------------------------------------------------- canvas fit
+function fitCanvas() {
+    const r = stageEl.getBoundingClientRect();
+    const aspect = canvas.width / canvas.height;
+    const aw = Math.max(120, r.width - 16), ah = Math.max(120, r.height - 16);
+    let h = ah, w = h * aspect;
+    if (w > aw) { w = aw; h = w / aspect; }
+    canvas.style.width = Math.round(w) + 'px'; canvas.style.height = Math.round(h) + 'px';
+}
+window.addEventListener('resize', fitCanvas);
+window.addEventListener('orientationchange', () => setTimeout(fitCanvas, 150));
+
+// ---------------------------------------------------------------- efek
+// Efek dicari di ../effects/<file>.xml. Kalau foldernya tidak ada, efek itu
+// dilewati (layer tetap tampil tanpa efek) -- tidak boleh membuat preset gagal dimuat.
+async function fetchEffectDefinition(id) {
+    const index = await effectIndexPromise;
+    const file = index[id] || index[id.split('.').pop()];
+    if (!file) throw new Error('efek ' + id + ' tidak ada di indeks');
+    const res = await fetch('../effects/' + file);
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' untuk ' + file);
+    return parseEffectXML(await res.text(), file);
+}
+function collectEffectIds(node, out) {
+    for (const layer of node.layers || []) {
+        for (const fx of layer.effects || []) out.add(fx.id);
+        if (layer.scene) collectEffectIds(layer.scene, out);
+    }
+    return out;
+}
+
+// ---------------------------------------------------------------- media
+function imageFor(uri) {
+    const file = mediaAssign.get(uri);
+    if (!file) return null;
+    if (imageCache.has(file)) return imageCache.get(file);
+    const url = pkg && pkg.imageUrls.get(file);
+    if (!url) return null;
+    const img = new Image(); img.src = url; imageCache.set(file, img);
+    return img;
+}
+function findPackageImage(media) {
+    if (!pkg) return null;
+    const uriName = decodeURIComponent(String(media.uri).split('/').pop().split(':').pop()).toLowerCase();
+    const fnName = String(media.filename || '').split('/').pop().toLowerCase();
+    const uriStem = uriName.replace(/\.[^.]+$/, '');
+    if (!uriName && !fnName) return null; // uri kosong tidak boleh "nyangkut" ke gambar pertama
+    for (const [name] of pkg.imageUrls) {
+        const n = name.toLowerCase();
+        if ((uriName && n === uriName) || (fnName && n === fnName) || (uriStem && n.startsWith(uriStem))) return name;
+    }
+    return null;
+}
+function placeholderImage(w, h, label) {
+    // fallback biar layer foto tidak kosong kalau gambarnya tidak ada di paket
+    const c = document.createElement('canvas'); c.width = w || 512; c.height = h || 512;
+    const g = c.getContext('2d');
+    const grad = g.createLinearGradient(0, 0, c.width, c.height);
+    grad.addColorStop(0, '#3a3a52'); grad.addColorStop(1, '#1d1d2a');
+    g.fillStyle = grad; g.fillRect(0, 0, c.width, c.height);
+    g.fillStyle = 'rgba(255,255,255,.16)';
+    const s = Math.max(24, c.width / 8);
+    for (let y = 0; y < c.height; y += s * 2) for (let x = ((y / (s * 2)) % 2) * s; x < c.width; x += s * 2) g.fillRect(x, y, s, s);
+    g.fillStyle = 'rgba(255,255,255,.7)'; g.font = `${Math.round(c.width / 14)}px sans-serif`; g.textAlign = 'center';
+    g.fillText(label || 'foto', c.width / 2, c.height / 2);
+    const img = new Image(); img.src = c.toDataURL('image/png');
+    return img;
+}
+function buildImageMap() {
+    const map = new Map();
+    for (const m of scene.media) {
+        if (!(m.type || '').startsWith('image')) continue;
+        let img = imageFor(m.uri);
+        if (!img) {
+            const key = 'ph:' + m.uri;
+            if (!imageCache.has(key)) imageCache.set(key, placeholderImage(m.width, m.height, 'foto contoh'));
+            img = imageCache.get(key);
+        }
+        map.set(m.uri, img);
+    }
+    return map;
+}
+async function preloadImages() {
+    const imgs = [...buildImageMap().values()];
+    await Promise.all(imgs.map((img) => (img.complete && img.naturalWidth) ? 0 : new Promise((r) => { img.onload = img.onerror = r; })));
+}
+
+// ---------------------------------------------------------------- audio
+function setupAudio(url, label) {
+    if (audio) { try { audio.pause(); } catch {} audio.removeAttribute('src'); try { audio.load(); } catch {} audio = null; }
+    audioUrl = url; audioBroken = false;
+    if (!url) return;
+    const el = new Audio(url); el.preload = 'auto';
+    el.addEventListener('error', () => { if (audio === el) { audioBroken = true; log('[AUDIO] gagal memuat ' + label + ', jalan tanpa suara'); } });
+    el.addEventListener('ended', () => { if (audio === el && !loop) setPlaying(false); });
+    audio = el; el.load();
+    log('[AUDIO] ' + label);
+}
+function projectAudioMs() {
+    const t = scene && scene.audio && scene.audio[0];
+    return t && t.endTime > t.startTime ? t.endTime - t.startTime : (scene ? scene.totalTime : 0);
+}
+const mediaToProject = (ms) => ms + syncOffsetMs;
+const projectToMedia = (ms) => Math.max(0, ms - syncOffsetMs);
+function syncAudio() { if (audio && !audioBroken) { try { audio.currentTime = projectToMedia(currentMs) / 1000; } catch {} } }
+
+// ---------------------------------------------------------------- scene
+function wrapFragment(text, name, tpl) {
+    const title = String(name).replace(/["<>]/g, '');
+    return `<scene width="${tpl.width}" height="${tpl.height}" totalTime="${tpl.totalTime}" fps="${tpl.fps}" bgcolor="#00000000" title="${title}">${text}</scene>`;
+}
+
+async function applyScene(next) {
+    setPlaying(false);
+    scene = next;
+    if (!renderer) {
+        renderer = new SceneRenderer(canvas, log);
+        renderer.effectsEnabled = true;
+        effectIndexPromise = fetch('./effect-index.json').then((r) => r.json()).catch(() => ({}));
+    }
+    // peta media -> gambar dari paket; sisanya placeholder
+    mediaAssign.clear();
+    for (const m of scene.media) {
+        if (!(m.type || '').startsWith('image')) continue;
+        const f = findPackageImage(m);
+        if (f) mediaAssign.set(m.uri, f);
+    }
+    await preloadImages();
+    renderer.setResolution(Number(qualityEl.value));
+    renderer.setScene(scene);
+    renderer.setImages(buildImageMap());
+    const ids = [...collectEffectIds(scene, new Set())];
+    log(`[SCENE] "${scene.title}" ${scene.width}x${scene.height} ${(scene.totalTime / 1000).toFixed(2)}s @${scene.fps}fps, ${scene.layers.length} layer, ${ids.length} efek unik`);
+    await renderer.loadEffectLibrary(ids, fetchEffectDefinition);
+    const skipped = renderer.failedEffects.size;
+    if (skipped) log(`[SCENE] ${skipped}/${ids.length} efek dilewati (file efek tidak tersedia di server)`);
+
+    seekEl.max = String(Math.round(scene.totalTime)); seekEl.value = '0'; currentMs = 0;
+    seekEl.disabled = playBtn.disabled = restartBtn.disabled = expStart.disabled = false;
+    fitCanvas();
+    renderer.renderAt(0);
+    fitCanvas();
+    hideOverlay();
+    subtitleEl.textContent = `${scene.title || 'Preset'} · ${(scene.totalTime / 1000).toFixed(1)}s · ${scene.width}x${scene.height} @${scene.fps}fps`;
+    expInfo.textContent = `Ekspor ${scene.width}x${scene.height} @ ${scene.fps}fps (bawaan preset, tidak bisa diubah).`;
+    layersEl.textContent = scene.layers.map((l, i) => `${i + 1}. ${l.label || l.id || l.tag}${l.effects.length ? ' [' + l.effects.length + 'fx]' : ''}`).join('\n');
+    needsRender = true;
+    return { ids, skipped };
+}
+
+function chooseScene(index) {
+    const main = importScenes[index];
+    const merged = parseSceneXML(main.text, main.name);
+    if (!merged.title) merged.title = main.name.replace(/\.xml$/i, '');
+    let frag = 0;
+    for (const f of importFragments) {
+        try {
+            const p = parseSceneXML(wrapFragment(f.text, f.name, merged), f.name);
+            merged.layers.push(...p.layers);
+            for (const m of p.media) if (!merged.media.some((x) => x.uri === m.uri)) merged.media.push(m);
+            frag += p.layers.length;
+        } catch (e) { log('[IMPORT] ' + f.name + ': ' + e.message); }
+    }
+    return { merged, mainName: main.name, frag };
+}
+
+async function loadFromTexts(entries, pkgMeta) {
+    importScenes = []; importFragments = [];
+    for (const e of entries) (/<scene[\s>]/.test(e.text) ? importScenes : importFragments).push(e);
+    if (!importScenes.length) throw new Error('tidak ada <scene> di XML. Pilih XML preset utuh (bukan cuma grup).');
+    // kalau ada beberapa preset utuh, pakai yang layernya terbanyak
+    let best = 0, bestN = -1;
+    importScenes.forEach((e, i) => { const n = (e.text.match(/<shape /g) || []).length; if (n > bestN) { bestN = n; best = i; } });
+    pickEl.innerHTML = importScenes.map((e, i) => `<option value="${i}">${esc(e.name)}</option>`).join('');
+    pickEl.value = String(best);
+    pickRow.style.display = importScenes.length > 1 ? '' : 'none';
+    const { merged, mainName, frag } = chooseScene(best);
+    const r = await applyScene(merged);
+    const bits = [`${mainName}`, `${merged.layers.length} layer`, `${(merged.totalTime / 1000).toFixed(1)}s`];
+    if (frag) bits.push(`+${frag} layer grup`);
+    if (pkgMeta) bits.push(`${pkgMeta.images} foto, ${pkgMeta.audio} audio dari paket`);
+    if (r.skipped) { setState(bits.join(' · ') + `\n⚠ ${r.skipped} efek tidak dirender (file efek belum ada di server)`, 'warn'); }
+    else setState(bits.join(' · '), 'ok');
+}
+
+// ---------------------------------------------------------------- muat dari link
+async function loadFromLink() {
+    const link = linkIn.value.trim();
+    if (!link) { setState('isi link Alight Motion dulu', 'err'); return; }
+    linkGo.disabled = true;
+    setState('mengambil paket dari Alight Motion...');
+    showOverlay('<b>Mengambil paket…</b><span>Bisa sampai ±15 detik untuk paket besar.</span>');
+    try {
+        const res = await fetch('/api/am?url=' + encodeURIComponent(link));
+        let data = null;
+        try { data = await res.json(); } catch {}
+        if (data && data.diag) for (const d of data.diag) log('[API] ' + d);
+        if (!res.ok || !data || !data.ok) throw new Error((data && data.error) || ('HTTP ' + res.status));
+
+        freeBlobs();
+        pkg = { imageUrls: new Map(), audio: [] };
+        for (const m of data.media || []) pkg.imageUrls.set(m.name, b64ToBlobUrl(m.data, m.mime));
+        for (const a of data.audio || []) pkg.audio.push({ name: a.name, url: b64ToBlobUrl(a.data, a.mime) });
+        const entries = Object.entries(data.xmlByName || { 'project.xml': data.xml }).map(([name, text]) => ({ name, text }));
+        // audio dari paket: pakai yang pertama
+        if (pkg.audio.length) setupAudio(pkg.audio[0].url, pkg.audio[0].name); else setupAudio(null);
+        await loadFromTexts(entries, { images: pkg.imageUrls.size, audio: pkg.audio.length });
+        if (data.title) subtitleEl.textContent = data.title + ' · ' + subtitleEl.textContent;
+    } catch (e) {
+        setState('gagal: ' + e.message + '\n→ Coba upload file .xml manual.', 'err');
+        showOverlay('<b>Gagal memuat</b><span>' + esc(e.message) + '</span>', true);
+        log('[LINK] gagal: ' + e.message);
+    } finally { linkGo.disabled = false; }
+}
+
+// ---------------------------------------------------------------- muat dari file xml
+async function loadFromFiles(fileList) {
+    const files = [...fileList]; if (!files.length) return;
+    setState('membaca XML...');
+    try {
+        const entries = [];
+        for (const f of files) entries.push({ name: f.name, text: await f.text() });
+        freeBlobs(); pkg = null; setupAudio(null);
+        await loadFromTexts(entries, null);
+    } catch (e) {
+        setState('gagal: ' + e.message, 'err');
+        showOverlay('<b>Gagal memuat XML</b><span>' + esc(e.message) + '</span>', true);
+        log('[XML] gagal: ' + e.message);
+    }
+}
+
+// ---------------------------------------------------------------- playhead
+function setPlaying(v) {
+    playing = v; needsRender = true;
+    playBtn.innerHTML = v ? '&#10074;&#10074; Jeda' : '&#9654; Putar';
+    if (!scene) return;
+    if (v) {
+        if (currentMs >= scene.totalTime - 5) currentMs = 0;
+        syncAudio();
+        if (audio && !audioBroken) audio.play().catch((e) => log('[AUDIO] play() gagal: ' + e.message));
+    } else if (audio) audio.pause();
+}
+
+function frame(now) {
+    const dt = lastTs ? Math.min(100, now - lastTs) : 0; lastTs = now;
+    if (scene && playing) {
+        const useAudio = audio && !audioBroken && !audio.paused && audio.readyState >= 2;
+        if (useAudio) {
+            // jam audio kasar di Android -> ikuti audio kalau selisih besar, kalau tidak jalan pakai dt
+            const a = mediaToProject(audio.currentTime * 1000);
+            currentMs = Math.abs(a - currentMs) > 90 ? a : currentMs + dt;
+        } else currentMs += dt;
+        if (currentMs >= scene.totalTime) {
+            if (loop) { currentMs = currentMs % scene.totalTime; syncAudio(); if (audio && !audioBroken && audio.paused) audio.play().catch(() => {}); }
+            else { currentMs = scene.totalTime; setPlaying(false); }
+        }
+    }
+    if (scene && renderer && !exporting && (playing || needsRender)) {
+        needsRender = false;
+        try {
+            renderer.renderAt(Math.min(currentMs, scene.totalTime));
+            statusEl.textContent = `${renderer.stats.layers} layer · ${renderer.stats.passes} pass · ${renderer.workWidth}x${renderer.workHeight}`;
+        } catch (e) { statusEl.textContent = 'render error: ' + e.message; log('[ERROR] ' + e.message); setPlaying(false); }
+    }
+    if (scene) {
+        if (!scrubbing) seekEl.value = String(Math.round(currentMs));
+        timeLabel.textContent = `${(currentMs / 1000).toFixed(2)}s / ${(scene.totalTime / 1000).toFixed(2)}s`;
+    }
+    requestAnimationFrame(frame);
+}
+
+// ---------------------------------------------------------------- ekspor
+const fmtBytes = (b) => !b ? '0 MB' : b < 1048576 ? (b / 1024).toFixed(0) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
+
+async function startExport() {
+    if (exporting || !renderer || !scene) return;
+    exporting = true; exportCancelled = false; expStart.disabled = true; expCancel.disabled = false;
+    if (playing) setPlaying(false);
+    expResult.textContent = '';
+    if (exportUrl) { URL.revokeObjectURL(exportUrl); exportUrl = null; }
+
+    // Resolusi & fps TERKUNCI dari preset. Tinggi ekspor = tinggi scene (dibatasi 1920 agar aman di HP).
+    const fps = Math.max(1, Math.min(60, Math.round(scene.fps) || 30));
+    const targetH = Math.min(1920, Math.max(180, Math.round(scene.height)));
+    const prevH = renderer.workHeight;
+    renderer.setResolution(targetH); fitCanvas();
+    const w = renderer.workWidth, h = renderer.workHeight;
+    const bitrate = Math.round(w * h * fps * 0.08);
+    const support = exportSupport();
+    log(`[EXPORT] ${w}x${h} @${fps}fps, ${support.webcodecs ? 'WebCodecs' : 'MediaRecorder (real-time)'}, audio ${audioUrl && support.audioEncoder ? 'ya' : 'tidak'}`);
+    const t0 = performance.now();
+    try {
+        const result = await exportFrames({
+            canvas,
+            renderFrame: (t) => renderer.renderAt(Math.min(t, scene.totalTime)),
+            startMs: 0, endMs: scene.totalTime, fps, bitrate,
+            audio: (support.audioEncoder && audioUrl && !audioBroken) ? { url: audioUrl, rate: 1, offsetMs: syncOffsetMs, bitrate: 128000 } : null,
+            isCancelled: () => exportCancelled,
+            onProgress: (ev) => {
+                if (ev.phase === 'mulai') { expBar.max = ev.total; expStats.textContent = `codec ${ev.codec.toUpperCase()} · ${ev.width}x${ev.height} · ${ev.total} frame`; }
+                else if (ev.phase === 'render') {
+                    expBar.value = ev.frame;
+                    const eta = ev.avgMs * (ev.total - ev.frame) / 1000;
+                    expStats.textContent = `frame ${ev.frame}/${ev.total} (${(ev.frame / ev.total * 100).toFixed(0)}%) · ${ev.msPerFrame.toFixed(0)} ms/frame · ${fmtBytes(ev.encodedBytes)} · ETA ${ev.realtime ? 'real-time' : Math.round(eta) + 's'}`;
+                } else if (ev.phase === 'audio') expStats.textContent = 'audio: ' + (ev.stage || '') + (ev.message ? ' — ' + ev.message : '');
+                else if (ev.phase === 'flush') expStats.textContent = 'menyelesaikan file...';
+            }
+        });
+        const elapsed = performance.now() - t0;
+        if (exportCancelled) { expStats.textContent = `dibatalkan di frame ${result.frames}`; }
+        else {
+            exportUrl = URL.createObjectURL(result.blob);
+            const name = `${(scene.title || 'preset').replace(/[^\w.-]+/g, '_')}-${h}p${fps}fps.webm`;
+            const v = document.createElement('video'); v.controls = true; v.playsInline = true; v.src = exportUrl;
+            const a = document.createElement('a'); a.href = exportUrl; a.download = name; a.textContent = `⬇ Download ${name} (${fmtBytes(result.blob.size)})`;
+            expResult.append(v, document.createElement('br'), a);
+            expStats.textContent = `selesai: ${result.frames} frame · ${fmtBytes(result.blob.size)} · ${(elapsed / 1000).toFixed(1)}s · audio ${result.audio ? 'ada' : 'tidak ada' + (result.audioError ? ' (' + result.audioError + ')' : '')}`;
+            log('[EXPORT] selesai ' + name);
+        }
+    } catch (e) {
+        expStats.textContent = 'GAGAL: ' + e.message; log('[EXPORT] gagal: ' + e.message);
+    } finally {
+        exporting = false; expStart.disabled = false; expCancel.disabled = true;
+        renderer.setResolution(prevH); fitCanvas(); needsRender = true;
+    }
+}
+
+// ---------------------------------------------------------------- events
+linkGo.addEventListener('click', loadFromLink);
+linkIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') loadFromLink(); });
+xmlIn.addEventListener('change', (e) => { const f = [...e.target.files]; e.target.value = ''; loadFromFiles(f); });
+pickEl.addEventListener('change', async () => {
+    try { const { merged } = chooseScene(Number(pickEl.value)); await applyScene(merged); setState('project: ' + importScenes[Number(pickEl.value)].name, 'ok'); }
+    catch (e) { setState('gagal: ' + e.message, 'err'); }
+});
+playBtn.addEventListener('click', () => setPlaying(!playing));
+restartBtn.addEventListener('click', () => { currentMs = 0; syncAudio(); needsRender = true; });
+loopBtn.addEventListener('click', () => { loop = !loop; loopBtn.textContent = 'Loop: ' + (loop ? 'ON' : 'OFF'); });
+seekEl.addEventListener('pointerdown', () => { scrubbing = true; });
+window.addEventListener('pointerup', () => { scrubbing = false; });
+seekEl.addEventListener('input', () => { currentMs = Number(seekEl.value); syncAudio(); needsRender = true; });
+qualityEl.addEventListener('change', () => { if (renderer && scene) { renderer.setResolution(Number(qualityEl.value)); fitCanvas(); needsRender = true; } });
+offsetEl.addEventListener('input', () => { syncOffsetMs = Number(offsetEl.value); offsetLabel.textContent = (syncOffsetMs > 0 ? '+' : '') + syncOffsetMs + ' ms'; syncAudio(); needsRender = true; });
+expStart.addEventListener('click', startExport);
+expCancel.addEventListener('click', () => { exportCancelled = true; });
+
+// ?url=<link> di alamat halaman -> langsung dimuat (bisa dibagikan)
+const qp = new URLSearchParams(location.search).get('url');
+if (qp) { linkIn.value = qp; loadFromLink(); }
+if (location.protocol === 'file:') { setState('Buka lewat http(s), bukan file://', 'err'); }
+fitCanvas();
+requestAnimationFrame(frame);
+log('[INIT] siap. WebCodecs: ' + (exportSupport().webcodecs ? 'ada' : 'tidak') + ', AudioEncoder: ' + (exportSupport().audioEncoder ? 'ada' : 'tidak'));
+</script>
+</body>
+</html>

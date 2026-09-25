@@ -1,0 +1,7 @@
+{
+  "name": "render-alight-motion",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Preview & ekspor preset Alight Motion di luar AM (link share atau XML)",
+  "engines": { "node": ">=18" }
+}

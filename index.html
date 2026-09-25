@@ -4,55 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AM Render Nimzz</title>
-<meta name="description" content="Server Express untuk efek &amp; preset Alight Motion. Preview efek shader dan mainkan preset scene lengkap dengan ekspor video.">
+<meta name="description" content="Review preset Alight Motion dari link atau XML, lalu ekspor video di luar aplikasi AM.">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="AM Render Nimzz">
-<meta property="og:description" content="Server Express untuk efek & preset Alight Motion. Preview efek shader dan mainkan preset scene lengkap dengan ekspor video.">
-<meta property="og:image" content="assets/og-image.png">
+<meta property="og:description" content="Review preset Alight Motion dari link atau XML, lalu ekspor video di luar aplikasi AM.">
+<meta property="og:url" content="https://render-alight-motion.vercel.app/">
+<meta property="og:image" content="https://render-alight-motion.vercel.app/assets/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AM Render Nimzz">
-<meta name="twitter:description" content="Server Express untuk efek & preset Alight Motion.">
-<meta name="twitter:image" content="assets/og-image.png">
 <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background: #0d0d11; color: #e0e0e0; min-height: 100vh;
-        padding: 28px 16px; display: flex; flex-direction: column; align-items: center; gap: 16px;
-    }
-    h1 { font-size: 1.1rem; color: #00e5ff; letter-spacing: 0.5px; }
-    .subtitle { font-size: 0.72rem; color: #777788; text-align: center; }
-    .grid { width: 100%; max-width: 520px; display: grid; gap: 12px; }
-    .card {
-        display: block; background: #16161c; border: 1px solid #282832; border-radius: 10px;
-        padding: 16px; text-decoration: none; color: inherit;
-    }
-    .card:active { border-color: #00e5ff; }
-    .card-title { color: #00e5ff; font-size: 0.95rem; margin-bottom: 4px; }
-    .card-desc { font-size: 0.75rem; color: #9a9aab; line-height: 1.45; }
-    .stats { max-width: 520px; font-size: 0.72rem; color: #777788; line-height: 1.7; }
-    code { color: #00e5ff; }
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:#0d0d11; color:#e0e0e0; min-height:100vh; padding:28px 16px; display:flex; flex-direction:column; align-items:center; gap:16px; }
+    h1 { font-size:1.1rem; color:#00e5ff; }
+    .subtitle { font-size:.72rem; color:#777788; text-align:center; }
+    .grid { width:100%; max-width:520px; display:grid; gap:12px; }
+    .card { display:block; background:#16161c; border:1px solid #282832; border-radius:10px; padding:16px; text-decoration:none; color:inherit; }
+    .card:active { border-color:#00e5ff; }
+    .card.main { border-color:#1d5a68; background:linear-gradient(135deg,rgba(0,229,255,.07),#16161c); }
+    .card-title { color:#00e5ff; font-size:.95rem; margin-bottom:4px; }
+    .card-desc { font-size:.75rem; color:#9a9aab; line-height:1.45; }
+    .stats { max-width:520px; font-size:.72rem; color:#777788; line-height:1.7; text-align:center; }
+    code { color:#00e5ff; }
 </style>
 </head>
 <body>
     <h1>AM Render Nimzz</h1>
-    <div class="subtitle">Server Express untuk efek &amp; preset Alight Motion</div>
+    <div class="subtitle">Review preset Alight Motion &amp; ekspor di luar aplikasi</div>
     <div class="grid">
+        <a class="card main" href="runtime/review.html">
+            <div class="card-title">Review preset &#8594;</div>
+            <div class="card-desc">Tempel link Alight Motion (atau upload XML), preview langsung, lalu ekspor video. Resolusi ikut bawaan preset.</div>
+        </a>
         <a class="card" href="runtime/preview.html">
             <div class="card-title">Preview efek &#8594;</div>
-            <div class="card-desc">Uji satu efek shader/script beserta kontrol parameternya.</div>
-        </a>
-        <a class="card" href="runtime/preset.html">
-            <div class="card-title">Preset player &#8594;</div>
-            <div class="card-desc">Putar scene preset lengkap dengan gambar &amp; audio, plus ekspor video.</div>
+            <div class="card-desc">Uji satu efek shader beserta kontrol parameternya.</div>
         </a>
     </div>
-    <div class="stats">
-        315 efek &middot; 13 preset XML &middot; 5 gambar contoh.<br>
-        API: <code>GET /api/effects</code> &middot; <code>GET /api/presets</code> &middot; <code>GET /api/health</code>
-    </div>
+    <div class="stats">API: <code>GET /api/am?url=&lt;link&gt;</code><br>Langsung buka: <code>/runtime/review.html?url=&lt;link&gt;</code></div>
 </body>
 </html>
